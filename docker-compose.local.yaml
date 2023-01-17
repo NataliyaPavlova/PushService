@@ -1,0 +1,50 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: notification
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
+#      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  click_house_server:
+   image: yandex/clickhouse-server
+   ports:
+     - "8123:8123"
+     - "9000:9000"
+     - "9009:9009"
+
+#  click_house_client:
+#    image: yandex/clickhouse-client
+#    command: ['--host', 'localhost']
+
+#  rabbitmq:
+#    image: rabbitmq:3.10.7
+#    env_file:
+#      - .env
+#    ports:
+#      - "5672:5672"
+#      - "15672:15673"
+##    expose:
+##      - 5672
+##      - 15672
+
+  redis:
+    image: redis:7.0.1
+    env_file:
+      - .env
+#    expose:
+#      - 6379
+    ports:
+      - "6379:6379"
+
+volumes:
+  db:
+    driver: local
+  static_volume:
