@@ -12,15 +12,9 @@ class Settings(BaseSettings):
     log_filename: str = 'logs/distributor.log'
     log_level: str = 'INFO'
 
-    # onesignal_key: str
-    # app_id: str
-    # onesignal_url: str
-    onesignal_key: str = Field(env='ONESIGNAL_KEY', default='Basic MWUyOWEwMTMtNTdhOC00NjQwLWI5M2YtZDVlMTY4ZDk0YTUw')
-    onesignal_url: str = "https://onesignal.com/api/v1/notifications"
-    app_id: str = "e77c7a41-2789-4c7f-88fa-60fa01dc808b"  # windy #todo for several apps
-
-    # ONESIGNAL_KEY: str
-    # APP_ID: str
+    onesignal_key: str
+    app_id: str
+    onesignal_url: str
 
     rabbitmq_host: str
     rabbitmq_port: int

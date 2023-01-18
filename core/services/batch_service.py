@@ -1,7 +1,5 @@
 import math
-from datetime import timedelta, datetime
 from typing import Sequence
-import pytz
 
 from core.db_mysql.models import Batch, Campaign
 from core.logger import get_logger
@@ -10,7 +8,6 @@ from core.settings import get_settings
 from core.db_mysql.repository.batch_repository import BatchRepository
 from core.db_mysql.repository.campaign_repository import CampaignRepository
 from core.db_mysql.repository.user_batch_repository import UserBatchRepository
-from core.testing_strategy.base_testing_strategy import ItemDistribution
 
 MAX_TOTAL_USERS_IN_BATCH = 2000
 
@@ -34,14 +31,13 @@ class BatchService:
         number_of_batches = math.ceil(total_users/MAX_TOTAL_USERS_IN_BATCH)
         logger.info(f'{total_users=}, {number_of_batches=}')
 
-        current_date = campaign.started_at
         users_list_position = 0
 
         batches = []
         for _ in range(number_of_batches):
             batch = Batch(
                 campaign_id=campaign.id,
-                send_after=current_date,
+                push_id=campaign.push_id,
                 status=Batch.BatchStatus.NEW.value,
             )
             batch = await self.batch_repository.create(batch)
@@ -61,29 +57,13 @@ class BatchService:
         logger.info(f'Distributed {users_list_position} users from {total_users}')
 
     async def get_campaign_to_send(self) -> Sequence[Campaign]:
-        return await self.campaign_repository.list(Campaign.CampaignStatus.STARTED)
+        return await self.campaign_repository.list(status=Campaign.CampaignStatus.STARTED)
 
     async def get_batches_for_send(self, campaign_id: int) -> list[Batch]:
         return await self.batch_repository.get_batches(
             status=Batch.BatchStatus.NEW.value,
-            send_after_later=datetime.now(tz=pytz.UTC),
             campaign_id=campaign_id,
         )
-
-    def set_pushes_in_batches(self, batches: Sequence[Batch],
-                              push_distribution: list[ItemDistribution]) -> Sequence[Event]:
-        current_push_distribution = push_distribution.pop()
-        events = []
-        for batch in batches:
-            if current_push_distribution.quantity == 0:
-                current_push_distribution = push_distribution.pop()
-            batch.push_id = current_push_distribution.item_id
-            current_push_distribution.quantity -= 1
-            events.append(Event(batch_id=batch.id, push_id=batch.push_id))
-            batch.status = Batch.BatchStatus.IN_QUEUE
-            self.batch_repository.update(batch)
-
-        return events
 
     # def get(self, batch_id: int) -> Batch:
     #     return self.batch_repository.get_or_none(batch_id)

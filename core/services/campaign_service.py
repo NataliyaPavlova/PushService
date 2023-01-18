@@ -13,10 +13,11 @@ class CampaignService:
         self.campaign_repository = campaign_repository
 
     async def save_campaign(self, campaign: CampaignRequestCreate) -> Tuple[Campaign, Push]:
+        push_status = Push.PushType(campaign.push.push_type)
         created_push = await self.push_repository.create(Push(
             headings=campaign.push.headings,
             contents=campaign.push.contents,
-            push_type=campaign.push.push_type))
+            push_type=push_status.value))
         created_campaign = await self.campaign_repository.create(Campaign(
             started_at=campaign.started_at,
             finished_at=campaign.finished_at,

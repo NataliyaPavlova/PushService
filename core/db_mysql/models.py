@@ -1,4 +1,4 @@
-from enum import Enum
+import enum
 
 from sqlalchemy import (
     TIMESTAMP,
@@ -7,7 +7,7 @@ from sqlalchemy import (
     BIGINT,
     INTEGER,
   )
-from sqlalchemy.dialects.mysql import ENUM, JSON
+from sqlalchemy.dialects.mysql import JSON
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -17,7 +17,7 @@ class Push(Base):
     """Уведомления. Могут использоваться в нескольких компаниях."""
     __tablename__ = 'push'
 
-    class PushType(ENUM):
+    class PushType(enum.Enum):
         WINDALERT = 'wind_alert'
         CHATALERT = 'chat'
         MEMEALERT = 'meme_alert'
@@ -25,7 +25,7 @@ class Push(Base):
     push_id = Column(INTEGER, primary_key=True)
     headings = Column(JSON, nullable=True)
     contents = Column(JSON, nullable=True)
-    push_type = Column(PushType, nullable=False)
+    push_type = Column(String(32), nullable=False)
 
     def __repr__(self):
         return f"<Push: {self.id}, {self.headings=}, {self.contents=}>"
@@ -79,7 +79,7 @@ class Batch(Base):
     "Заявки на рассылку"
     __tablename__ = 'batch'
 
-    class BatchStatus(str, Enum):
+    class BatchStatus(enum.Enum):
         NEW = 'new'
         IN_QUEUE = 'in_queue'
         SENT = 'sent'
@@ -89,14 +89,14 @@ class Batch(Base):
 
     id = Column(BIGINT, primary_key=True)
     push_id = Column(BIGINT, nullable=True)
-    send_after = Column(TIMESTAMP)
+    campaign_id = Column(BIGINT, nullable=False)
     notification_id = Column(String(50), nullable=True)
-    status = Column(ENUM(BatchStatus))
+    status = Column(String(32), nullable=False)
     created_at = Column(TIMESTAMP)
     updated_at = Column(TIMESTAMP)
 
     def __repr__(self):
-        return f'<Batch: {self.id}, {self.push_id=}, {self.send_after=}, {self.status=}>'
+        return f'<Batch: {self.id}, {self.push_id=}, {self.status=}>'
 
 
 class UserBatch(Base):
@@ -114,7 +114,7 @@ class Campaign(Base):
     """Кампания для рассылки"""
     __tablename__ = 'campaign'
 
-    class CampaignStatus(str, Enum):
+    class CampaignStatus(enum.Enum):
         NEW = 'new'
         PENDING = 'pending'
         STARTED = 'started'
@@ -124,7 +124,7 @@ class Campaign(Base):
     id = Column(BIGINT, primary_key=True)
     started_at = Column(TIMESTAMP)
     finished_at = Column(TIMESTAMP)
-    status = Column(ENUM(CampaignStatus))
+    status = Column(String(32), nullable=False)
     push_id = Column(INTEGER)
     users = Column(JSON)
 
