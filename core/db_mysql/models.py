@@ -26,6 +26,7 @@ class Push(Base):
     headings = Column(JSON, nullable=True)
     contents = Column(JSON, nullable=True)
     push_type = Column(String(32), nullable=False)
+    data = Column(JSON, nullable=True)
 
     def __repr__(self):
         return f"<Push: {self.id}, {self.headings=}, {self.contents=}>"

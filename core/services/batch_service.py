@@ -65,11 +65,11 @@ class BatchService:
             campaign_id=campaign_id,
         )
 
-    # def get(self, batch_id: int) -> Batch:
-    #     return self.batch_repository.get_or_none(batch_id)
+    async def get(self, batch_id: int) -> Batch:
+        return await self.batch_repository.get_or_none(batch_id)
 
-    # def get_push_tokens(self, batch_id: int) -> list[int]:
-    #     return self.batch_repository.get_user_push_tokens(batch_id)
+    async def get_push_tokens(self, batch_id: int) -> list[str]:
+        return await self.user_batch_repository.get_user_push_tokens(batch_id)
     #
     # def get_batches_to_log(self) -> list[Batch] | None:
     #     return self.batch_repository.get_batches_to_log()

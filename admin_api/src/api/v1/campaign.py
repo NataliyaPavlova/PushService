@@ -36,4 +36,7 @@ async def save_campaign(
         push_headings=created_push.headings,
         users=created_campaign.users
     )
+# TODO handle exceptions
+# TODO add app param
+
 

@@ -15,6 +15,7 @@ class PushRequestCreate(RequestBase):
     headings: dict
     contents: dict
     push_type: str
+    data: dict
 
 
 class CampaignRequestCreate(RequestBase):

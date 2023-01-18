@@ -17,11 +17,12 @@ class CampaignService:
         created_push = await self.push_repository.create(Push(
             headings=campaign.push.headings,
             contents=campaign.push.contents,
-            push_type=push_status.value))
+            push_type=push_status.value,
+            data=campaign.push.data))
         created_campaign = await self.campaign_repository.create(Campaign(
             started_at=campaign.started_at,
             finished_at=campaign.finished_at,
-            status=Campaign.CampaignStatus.PENDING,
+            status=Campaign.CampaignStatus.PENDING.value,
             push_id=created_push.push_id,
             users=campaign.users))
         return created_campaign, created_push

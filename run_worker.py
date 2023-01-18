@@ -1,3 +1,4 @@
+import asyncio
 from celery import shared_task, Celery
 
 from core.logger import get_logger
@@ -15,12 +16,6 @@ app.conf.beat_schedule = {
         'schedule': 5,
     },
 }
-
-
-@shared_task
-def main():
-    start_worker()
-
 
 if __name__ == "__main__":
     start_worker()
