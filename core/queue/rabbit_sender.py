@@ -2,7 +2,7 @@ from core.logger import get_logger
 from core.queue.connection import get_rabbitmq_connection
 from core.queue.models import Event
 from core.settings import get_settings
-from pika import connection
+from pika import connection, BasicProperties, spec
 
 settings = get_settings()
 logger = get_logger(settings.log_filename)
@@ -24,7 +24,9 @@ class RabbitSender:
                 exchange='',
                 routing_key=settings.rabbitmq_queue,
                 body=event.json(),
-                delivery_mode=2
+                properties=BasicProperties(
+                    delivery_mode=spec.PERSISTENT_DELIVERY_MODE
+                )
             )
         except Exception as err:
             logger.error("ERROR: error publishing " + str(err))

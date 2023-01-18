@@ -1,6 +1,6 @@
 from core.db_mysql.models import Campaign, Batch
 from core.logger import get_logger
-# from core.queue.rabbit_sender import RabbitSender
+from core.queue.rabbit_sender import RabbitSender
 from core.settings import get_settings
 from core.queue.models import Event
 from core.utils import get_batch_campaign_service_callback
@@ -15,7 +15,7 @@ class Distributor:
     def __init__(self, campaign_service, batch_service):
         self.campaign_service = campaign_service
         self.batch_service = batch_service
-        # self.queue_repository = RabbitSender()
+        self.queue_repository = RabbitSender()
 
     async def create_batch_for_campaign(self, campaign: Campaign):
         users = await self.campaign_service.get_users(campaign.id)
@@ -29,7 +29,7 @@ class Distributor:
             event = Event(batch_id=batch.id, push_id=batch.push_id)
             batch.status = Batch.BatchStatus.IN_QUEUE.value
             await self.batch_service.update(batch)
-            # self.queue_repository.publish(event)
+            self.queue_repository.publish(event)
 
     async def processing_pending_campaigns(self) -> None:
         campaigns = await self.campaign_service.get_pending_campaigns()
