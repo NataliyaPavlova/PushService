@@ -1,12 +1,10 @@
 services:
   admin_api:
     build:
-      context: ./admin_api
-      dockerfile: admin_api.Dockerfile
+      context: .
+      dockerfile: admin_api/admin_api.Dockerfile
     env_file:
       - .env
-    volumes:
-      - static_volume:/app/web/staticfiles/
     depends_on:
       - click_house_server
       - mysql
@@ -20,49 +18,46 @@ services:
     depends_on:
       - admin_api
 
-  worker:
-    build:
-      context: ./
-      dockerfile: worker.Dockerfile
-    command: single-beat celery -A run_distributor beat --loglevel=INFO
-    volumes:
-      - .env:/app/.env:ro
-    depends_on:
-      - rabbitmq
-      - redis
-      - click_house_server
-
-  etl_logs:
-    build:
-      context: ./
-      dockerfile: etl_logs.Dockerfile
-    command: single-beat celery -A run_etl_logs beat --loglevel=INFO
-    volumes:
-      - .env:/app/.env:ro
-    depends_on:
-      - admin_api
-      - click_house_server
-
-  distributor:
-    build:
-      context: ./
-      dockerfile: distributor.Dockerfile
-    command: single-beat celery -A run_distributor beat --loglevel=INFO
-    volumes:
-      - .env:/app/.env:ro
-    depends_on:
-      - rabbitmq
-      - redis
-      - click_house_server
-
+#  worker:
+#    build:
+#      context: ./
+#      dockerfile: worker.Dockerfile
+#    command: single-beat celery -A run_distributor beat --loglevel=INFO
+#    volumes:
+#      - .env:/app/.env:ro
+#    depends_on:
+#      - rabbitmq
+#      - redis
+#      - click_house_server
+#
+#  etl_logs:
+#    build:
+#      context: ./
+#      dockerfile: etl_logs.Dockerfile
+#    command: single-beat celery -A run_etl_logs beat --loglevel=INFO
+#    volumes:
+#      - .env:/app/.env:ro
+#    depends_on:
+#      - admin_api
+#      - click_house_server
+#
+#  distributor:
+#    build:
+#      context: ./
+#      dockerfile: distributor.Dockerfile
+#    command: single-beat celery -A run_distributor beat --loglevel=INFO
+#    volumes:
+#      - .env:/app/.env:ro
+#    depends_on:
+#      - rabbitmq
+#      - redis
+#      - click_house_server
+#
   mysql:
     image: mysql:8.0
     restart: always
-    environment:
-      MYSQL_DATABASE: notification
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
+    env_file:
+      - .env
     ports:
       - "3306:3306"
     volumes:
@@ -77,23 +72,23 @@ services:
     volumes:
       - db:/var/lib/clickhouse
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: notification_rabbitmq
-    env_file:
-      - .env
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
-  redis:
-    image: redis:7.0.1
-    env_file:
-      - .env
-    ports:
-      - "6379:6379"
-
-
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    container_name: notification_rabbitmq
+#    env_file:
+#      - .env
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#
+#  redis:
+#    image: redis:7.0.1
+#    env_file:
+#      - .env
+#    ports:
+#      - "6379:6379"
+#
+#
 volumes:
   db:
     driver: local

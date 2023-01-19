@@ -19,7 +19,7 @@ async def health_check():
     return ORJSONResponse(content={"message": "api ok"})
 
 
-def start_admin():
-    uvicorn.run(
-        'admin_api.src.main:app', host='0.0.0.0', port=8000,
-    )
+# def start_admin():
+#     uvicorn.run(
+#         'admin_api.src.main:app', host='0.0.0.0', port=8000,
+#     )
