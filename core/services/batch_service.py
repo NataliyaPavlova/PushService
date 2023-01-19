@@ -9,7 +9,7 @@ from core.db_mysql.repository.batch_repository import BatchRepository
 from core.db_mysql.repository.campaign_repository import CampaignRepository
 from core.db_mysql.repository.user_batch_repository import UserBatchRepository
 
-MAX_TOTAL_USERS_IN_BATCH = 2000
+MAX_TOTAL_USERS_IN_BATCH = 2
 
 logger = get_logger(get_settings().log_filename)
 
