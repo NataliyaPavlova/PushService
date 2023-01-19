@@ -24,5 +24,5 @@ class StatsRepository(AbstractRepositoryClickHouse):
 
     async def insert(self, data: str) -> None:
         sql = (f'INSERT INTO notification.Log '
-               f'(push_tokens, created_at, completed_at, event, number_of_events, notification_id, campaign_id, cohort_id, push_id) VALUES {data}')
+               f'(push_tokens, created_at, completed_at, event, number_of_events, notification_id, campaign_id, push_id) VALUES {data}')
         await self.client.execute(sql)

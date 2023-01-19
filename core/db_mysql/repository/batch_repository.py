@@ -38,3 +38,5 @@ class BatchRepository(AbstractMysqlRepository):
         await self.session.commit()
         return batches
 
+
+

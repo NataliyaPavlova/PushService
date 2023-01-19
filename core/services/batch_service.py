@@ -70,14 +70,14 @@ class BatchService:
 
     async def get_push_tokens(self, batch_id: int) -> list[str]:
         return await self.user_batch_repository.get_user_push_tokens(batch_id)
-    #
-    # def get_batches_to_log(self) -> list[Batch] | None:
-    #     return self.batch_repository.get_batches_to_log()
-    #
-    # def set_status_logged(self, batch_id) -> Batch:
-    #     batch = self.batch_repository.get(batch_id)
-    #     batch.status = Batch.BatchStatus.LOGGED
-    #     return self.batch_repository.update(batch)
+
+    async def get_batches_to_log(self) -> list[Batch] | None:
+        return await self.batch_repository.get_batches_to_log()
+
+    async def set_status_logged(self, batch_id) -> Batch:
+        batch = await self.batch_repository.get_or_none(batch_id)
+        batch.status = Batch.BatchStatus.LOGGED.value
+        return await self.batch_repository.update(batch)
 
     async def update(self, batch) -> None:
         await self.batch_repository.update(batch)

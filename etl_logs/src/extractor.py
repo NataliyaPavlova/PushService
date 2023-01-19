@@ -1,19 +1,11 @@
-import csv
 import http
-import io
-
 from typing import AsyncGenerator
-import json
-
 import requests
 
-from admin_api.src.db.models_ch import Log
-from admin_api.src.services.batch_service import BatchService
-from admin_api.src.db.repository.batch_repository import BatchRepository
-from admin_api.src.db.db_mysql import get_session
+from core.db_mysql.db import get_mysql_session
+from core.utils import get_batch_service_callback
 from etl_logs.logger import get_logger
 from etl_logs.settings import get_settings
-from etl_logs.src.utils import get_batch_service_callback
 
 settings = get_settings()
 logger = get_logger(settings.log_filename)
@@ -29,24 +21,6 @@ class OneSignalAPI:
             "Content-Type": "application/json; charset=utf-8",
             "Authorization": f"{settings.onesignal_key}"
         }
-
-    def get_history(self, notification_id: str, event_name: Log.Event) -> list[dict] | None:
-        """Applicable for paid account only."""
-        url = f"{self.url}/{notification_id}/history/"
-        payload = {
-            "events": event_name,
-            "app_id": settings.app_id,
-            "email": "nataliya.s.pavlova@gmail.com"
-        }
-        result = requests.post(url, headers=self.headers, data=json.dumps(payload))
-        if result.status_code != http.HTTPStatus.OK or not result.raw['success'] or "destination_url" not in result.raw.keys():
-            return None
-        csv_url = result.raw["destination_url"]
-
-        r = requests.get(csv_url)
-        buff = io.StringIO(r.text)
-        reader = csv.DictReader(buff, dialect=csv.excel_tab, delimiter=',')
-        return list(reader)
 
     def view_notification(self, notification_id: str) -> tuple:
         """ View general stats for a notification"""
@@ -73,17 +47,10 @@ class Extractor:
     def __init__(self):
         self.onesignal = OneSignalAPI()
 
-    @staticmethod
-    async def get_batch_service_callback(sessions):
-        async for session in sessions:
-            batch_repository = BatchRepository(session)
-            batch_service = BatchService(batch_repository)
-            return batch_service
-
     async def get_data(self) -> AsyncGenerator:
         logger.info('Start getting logs from OneSignal')
 
-        session = get_session()
+        session = get_mysql_session()
         batch_service = await get_batch_service_callback(session)
 
         batches = await batch_service.get_batches_to_log()

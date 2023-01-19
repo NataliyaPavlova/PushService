@@ -4,8 +4,6 @@ from typing import Any
 import time
 import requests as requests
 
-from pika.adapters.blocking_connection import BlockingChannel
-from pika.spec import Basic
 import aio_pika
 from core.logger import get_logger
 from core.queue.connection import get_async_rabbitmq_connection
@@ -91,10 +89,9 @@ async def start_worker():
     batch_service, campaign_service, push_service = await get_batch_campaign_push_service_callback(session)
     rabbit_connection = await get_async_rabbitmq_connection()
     rabbit_channel = await rabbit_connection.channel()
+
     worker = WorkerPublisher(batch_service, campaign_service, push_service)
     await worker.create_queues(rabbit_channel)
     await worker.set_queue_callbacks()
     logger.info('Rabbit callback initialized')
     logger.info('Waiting for messages.')
-    rabbit_channel.start_consuming()
-    logger.info('Application closed.')
