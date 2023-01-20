@@ -1,6 +1,6 @@
 from sqlalchemy.future import select
 
-from core.db_mysql.models import Batch, UserBatch
+from core.db_mysql.models import Batch
 from core.db_mysql.repository.abstract_repository import AbstractMysqlRepository
 from core.settings import get_settings
 from core.logger import get_logger

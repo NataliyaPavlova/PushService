@@ -2,7 +2,7 @@ from core.logger import get_logger
 from core.queue.connection import get_rabbitmq_connection
 from core.queue.models import Event
 from core.settings import get_settings
-from pika import connection, BasicProperties, spec
+from pika import BlockingConnection, BasicProperties, spec
 
 settings = get_settings()
 logger = get_logger(settings.log_filename)
@@ -10,9 +10,9 @@ logger = get_logger(settings.log_filename)
 
 class RabbitSender:
 
-    def __init__(self, connection: connection = get_rabbitmq_connection()) -> None:
-        self.connection = connection
-        self.channel = connection.channel()
+    def __init__(self) -> None:
+        self.connection = get_rabbitmq_connection()
+        self.channel = self.connection.channel()
         self.queue = self.channel.queue_declare(
             queue=settings.rabbitmq_queue,
             durable=True

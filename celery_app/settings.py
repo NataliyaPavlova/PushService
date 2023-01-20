@@ -13,8 +13,6 @@ class Settings(BaseSettings):
     log_level: str = 'INFO'
 
     broker_url: str
-    single_beat_identifier: str
-    single_beat_redis_server: str
 
     class Config:
         env_file = ENV_FILE

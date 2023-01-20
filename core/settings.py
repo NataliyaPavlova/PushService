@@ -50,21 +50,6 @@ class Settings(BaseSettings):
     def mysql_url(self):
         return f'mysql+asyncmy://{self.mysql_user}:{self.mysql_root_password}@{self.mysql_host}:{self.mysql_port}/{self.mysql_database}'
 
-
-    celerybeat_schedule = {
-        'start_ETL': {
-            'task': 'run_distributor.main',
-            'schedule': 3.0,
-            'options': {
-                'expires': 15.0,
-            },
-        }
-    }
-
-    broker_url: str
-    single_beat_identifier: str
-    single_beat_redis_server: str
-
     class Config:
         env_file = ENV_FILE
 

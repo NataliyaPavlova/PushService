@@ -1,7 +1,6 @@
 import abc
 from http import HTTPStatus
 
-from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.db_mysql.db import get_mysql_session
@@ -23,14 +22,6 @@ class AbstractMysqlRepository(abc.ABC):
         if instance:
             return instance
         return None
-
-    async def get(self, _id: int) -> Base:
-        """Get an object from DB by id. If no object found - raises exception"""
-        instance = await self.session.get(self.model, _id)
-        if not instance:
-            raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                                detail=MESSAGE_NO_ITEM)
-        return instance
 
     async def update(self, instance: type[Base]) -> type[Base]:
         """Save a new object in DB. Returns the object"""

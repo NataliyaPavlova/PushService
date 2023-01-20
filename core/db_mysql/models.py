@@ -1,4 +1,5 @@
 import enum
+import datetime
 
 from sqlalchemy import (
     TIMESTAMP,
@@ -131,3 +132,17 @@ class Campaign(Base):
 
     def __repr__(self):
         return f"<Campaign: {self.id}, started_at: {self.started_at}, finished_st: {self.finished_at}>"
+
+
+class PushRequestCreate:
+    headings: dict
+    contents: dict
+    push_type: str
+    data: dict
+
+
+class CampaignRequestCreate:
+    users: list[str]
+    push: PushRequestCreate
+    started_at: datetime
+    finished_at: datetime

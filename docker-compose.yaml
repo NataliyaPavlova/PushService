@@ -38,16 +38,6 @@ services:
 #      - admin_api
 #      - click_house_server
 #
-  distributor:
-    build:
-      context: .
-      dockerfile: distributor/distributor.Dockerfile
-#    command: single-beat celery -A run_distributor beat --loglevel=INFO
-    volumes:
-      - .env:/app/.env:ro
-    depends_on:
-      - rabbitmq
-      - redis
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -64,5 +54,32 @@ services:
     ports:
       - "6379:6379"
 
+  celery_app:
+    build:
+      context: .
+      dockerfile: celery_app/celery.Dockerfile
+#    image: &img celery_app
+    command: celery --app=celery_app.celery_worker.app worker --pool=gevent --concurrency=20 --loglevel=INFO
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - rabbitmq
+    restart: 'no'
+
+  beat:
+    build:
+      context: .
+      dockerfile: celery_app/celery.Dockerfile
+#    image: celery_app:latest
+    command: celery --app=celery_app.celery_worker.app beat --loglevel=INFO
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: 'no'
+
+
 volumes:
   static_volume:
+  celery_app:
