@@ -9,15 +9,15 @@ RUN mkdir -p $APP_HOME \
 
 WORKDIR $APP_HOME
 
-COPY ./distributor/requirements.txt $APP_HOME/
+RUN mkdir -p $APP_HOME/distributor
+COPY distributor/requirements.txt $APP_HOME/distributor/
 
 RUN pip install --upgrade --no-cache-dir pip wheel setuptools \
-    && pip install --no-cache-dir --upgrade -r requirements.txt
+    && pip install --no-cache-dir --upgrade -r distributor/requirements.txt
 
 USER app:app
 
-COPY ./core $APP_HOME
-COPY ./distributor $APP_HOME
-COPY ./run_distributor.py $APP_HOME
+COPY ./core $APP_HOME/core
+COPY ./distributor $APP_HOME/distributor
 
 WORKDIR $APP_HOME/

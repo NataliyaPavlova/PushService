@@ -5,9 +5,6 @@ services:
       dockerfile: admin_api/admin_api.Dockerfile
     env_file:
       - .env
-    depends_on:
-      - click_house_server
-      - mysql
 
   nginx:
     build: ./nginx
@@ -41,55 +38,31 @@ services:
 #      - admin_api
 #      - click_house_server
 #
-#  distributor:
-#    build:
-#      context: ./
-#      dockerfile: distributor.Dockerfile
+  distributor:
+    build:
+      context: .
+      dockerfile: distributor/distributor.Dockerfile
 #    command: single-beat celery -A run_distributor beat --loglevel=INFO
-#    volumes:
-#      - .env:/app/.env:ro
-#    depends_on:
-#      - rabbitmq
-#      - redis
-#      - click_house_server
-#
-  mysql:
-    image: mysql:8.0
-    restart: always
+    volumes:
+      - .env:/app/.env:ro
+    depends_on:
+      - rabbitmq
+      - redis
+
+  rabbitmq:
+    image: rabbitmq:3-management
     env_file:
       - .env
     ports:
-      - "3306:3306"
-    volumes:
-      - db:/var/lib/mysql
+      - "5672:5672"
+      - "15672:15672"
 
-  click_house_server:
-    image: yandex/clickhouse-server
+  redis:
+    image: redis:7.0.1
+    env_file:
+      - .env
     ports:
-      - "8123:8123"
-      - "9000:9000"
-      - "9009:9009"
-    volumes:
-      - db:/var/lib/clickhouse
+      - "6379:6379"
 
-#  rabbitmq:
-#    image: rabbitmq:3-management
-#    container_name: notification_rabbitmq
-#    env_file:
-#      - .env
-#    ports:
-#      - "5672:5672"
-#      - "15672:15672"
-#
-#  redis:
-#    image: redis:7.0.1
-#    env_file:
-#      - .env
-#    ports:
-#      - "6379:6379"
-#
-#
 volumes:
-  db:
-    driver: local
   static_volume:
