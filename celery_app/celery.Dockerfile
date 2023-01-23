@@ -19,6 +19,7 @@ USER app:app
 
 COPY ./core $APP_HOME/core
 COPY ./distributor $APP_HOME/distributor
+COPY ./etl_logs $APP_HOME/etl_logs
 COPY ./celery_app $APP_HOME/celery_app
 
 WORKDIR $APP_HOME/

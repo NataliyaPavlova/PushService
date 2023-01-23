@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import BaseSettings, Field
+from pydantic import BaseSettings
 from pydantic.tools import lru_cache
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +9,7 @@ ENV_FILE = str(BASE_DIR / '.env')
 
 
 class Settings(BaseSettings):
-    log_filename: str = 'logs/distributor.log'
+    log_filename: str = 'logs/core.log'
     log_level: str = 'INFO'
 
     onesignal_key: str

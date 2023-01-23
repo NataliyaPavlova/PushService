@@ -13,13 +13,10 @@ app = Celery(
 app.conf.beat_schedule = {
         'start_distributor': {
             'task': 'celery_app.tasks.distributor_task',
-            'schedule': crontab(minute='*/1'),
+            'schedule': crontab(minute='*/5'),
         },
-        # 'start_ETL': {
-        #     'task': 'run_etl.main',
-        #     'schedule': 3.0,
-        #     'options': {
-        #         'expires': 15.0,
-        #     },
+        'start_ETL': {
+            'task': 'celery_app.tasks.etl_task',
+            'schedule': crontab(minute='*/60')
         }
-
+}

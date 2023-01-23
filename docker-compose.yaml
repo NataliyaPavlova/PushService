@@ -15,30 +15,6 @@ services:
     depends_on:
       - admin_api
 
-#  worker:
-#    build:
-#      context: ./
-#      dockerfile: worker.Dockerfile
-#    command: single-beat celery -A run_distributor beat --loglevel=INFO
-#    volumes:
-#      - .env:/app/.env:ro
-#    depends_on:
-#      - rabbitmq
-#      - redis
-#      - click_house_server
-#
-#  etl_logs:
-#    build:
-#      context: ./
-#      dockerfile: etl_logs.Dockerfile
-#    command: single-beat celery -A run_etl_logs beat --loglevel=INFO
-#    volumes:
-#      - .env:/app/.env:ro
-#    depends_on:
-#      - admin_api
-#      - click_house_server
-#
-
   rabbitmq:
     image: rabbitmq:3-management
     env_file:
@@ -58,7 +34,6 @@ services:
     build:
       context: .
       dockerfile: celery_app/celery.Dockerfile
-#    image: &img celery_app
     command: celery --app=celery_app.celery_worker.app worker --pool=gevent --concurrency=20 --loglevel=INFO
     env_file:
       - .env
@@ -71,13 +46,22 @@ services:
     build:
       context: .
       dockerfile: celery_app/celery.Dockerfile
-#    image: celery_app:latest
     command: celery --app=celery_app.celery_worker.app beat --loglevel=INFO
     env_file:
       - .env
     depends_on:
       - redis
     restart: 'no'
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/worker.Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+    #command: python worker/run_worker.py
 
 
 volumes:

@@ -25,10 +25,3 @@ async def make_etl() -> None:
         except Exception as e:
             logger.error(f'ETL exception: {e}')
     logger.info('ETL process closed.')
-
-#
-# @shared_task
-# def main():
-#     logger.info('ETL process started: from OneSignal to ClickHouse.')
-#     make_etl()
-#     logger.info('ETL process closed.')

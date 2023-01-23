@@ -5,6 +5,7 @@ import time
 import requests as requests
 
 import aio_pika
+
 from core.logger import get_logger
 from core.queue.connection import get_async_rabbitmq_connection
 from core.queue.models import Event
@@ -77,7 +78,7 @@ class WorkerPublisher:
         else:
             batch.status = Batch.BatchStatus.REJECTED.value
             logger.info(f'Batch {event.batch_id} was rejected with the following status_code: {req.status_code} and errors: {req.json()["errors"]}. Body: {req.json()}')
-            #TODO deal with invalid_player_ids in errors
+            # TODO deal with invalid_player_ids in errors
 
         await self.batch_service.update(batch)
 
@@ -95,3 +96,6 @@ async def start_worker():
     await worker.set_queue_callbacks()
     logger.info('Rabbit callback initialized')
     logger.info('Waiting for messages.')
+
+if __name__ == "__main__":
+    asyncio.run(start_worker())
