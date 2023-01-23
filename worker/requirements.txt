@@ -6,3 +6,5 @@ celery==5.2.7
 aio-pika==8.3.0
 aiochclient[aiohttp-speedups]==2.2.0
 asyncmy==0.2.5
+pika==1.3.0
+

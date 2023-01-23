@@ -3,8 +3,14 @@ import json
 from typing import Any
 import time
 import requests as requests
+import os
+import sys
+from pathlib import Path
 
 import aio_pika
+
+BASE_DIR = Path(__file__).resolve().parent
+sys.path.append(os.path.dirname(BASE_DIR))
 
 from core.logger import get_logger
 from core.queue.connection import get_async_rabbitmq_connection
