@@ -123,12 +123,18 @@ class Campaign(Base):
         DISABLED = 'disabled'
         FINISHED = 'finished'
 
+    class AppName(enum.Enum):
+        WINDY = 'windy'
+        WINDHUB = 'windhub'
+        MEMETEO = 'memeteo'
+
     id = Column(BIGINT, primary_key=True)
     started_at = Column(TIMESTAMP)
     finished_at = Column(TIMESTAMP)
     status = Column(String(32), nullable=False)
     push_id = Column(INTEGER)
     users = Column(JSON)
+    app_name = Column(String(32), nullable=False)
 
     def __repr__(self):
         return f"<Campaign: {self.id}, started_at: {self.started_at}, finished_st: {self.finished_at}>"
@@ -146,3 +152,4 @@ class CampaignRequestCreate:
     push: PushRequestCreate
     started_at: datetime
     finished_at: datetime
+    app_name: str

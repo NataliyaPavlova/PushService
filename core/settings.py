@@ -15,6 +15,19 @@ class Settings(BaseSettings):
     onesignal_key: str
     app_id: str
     onesignal_url: str
+    app_id_whb: str
+    onesignal_key_whb: str
+    app_id_mem: str
+    onesignal_key_mem: str
+
+    def onesignal_credentials(self, app_name) -> tuple[str, str]:
+        match app_name:
+            case "windy":
+                return self.onesignal_key, self.app_id
+            case "windhub":
+                return self.onesignal_key_whb, self.app_id_whb
+            case "memeteo":
+                return self.onesignal_key_mem, self.app_id_mem
 
     rabbitmq_host: str
     rabbitmq_port: int

@@ -42,22 +42,3 @@ class Settings(BaseSettings):
 def get_settings():
     return Settings()
 
-
-class CelerySettings:
-    CELERY_BEAT_SCHEDULE = {
-        'start_ETL': {
-            'task': 'etl_logs.main.main',
-            'schedule': 60.0,
-            'options': {
-                'expires': 15.0,
-            },
-        },
-    }
-    BROKER_URL = 'redis://redis:6379/0'
-    SINGLE_BEAT_IDENTIFIER = 'celery-beat'
-    SINGLE_BEAT_REDIS_SERVER = 'redis://redis:6379/0'
-
-
-@lru_cache()
-def get_celery_settings():
-    return CelerySettings()

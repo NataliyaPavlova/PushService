@@ -24,7 +24,7 @@ async def save_campaign(
     """
     Send push-notifications. Save campaign info in DB
 
-    :param campaign: users (push tokens), pushes, started_at, finished_at
+    :param campaign: users (push tokens), pushes, started_at, finished_at, app_name
     """
     session = get_mysql_session()
     campaign_service = await get_campaign_service_callback(session)
@@ -34,7 +34,8 @@ async def save_campaign(
         started_at=created_campaign.started_at,
         finished_at=created_campaign.finished_at,
         push_headings=created_push.headings,
-        users=created_campaign.users
+        users=created_campaign.users,
+        app_name=created_campaign.app_name
     )
 # TODO handle exceptions
 # TODO add app param

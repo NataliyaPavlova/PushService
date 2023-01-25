@@ -27,8 +27,7 @@ from core.db_mysql.db import get_mysql_session
 settings = get_settings()
 logger = get_logger(settings.log_filename)
 
-HEADERS = {"Content-Type": "application/json; charset=utf-8",
-           "Authorization": settings.onesignal_key}
+HEADERS = {"Content-Type": "application/json; charset=utf-8"}
 
 
 class WorkerPublisher:
@@ -52,28 +51,31 @@ class WorkerPublisher:
     async def create_queues(self, channel: aio_pika.Channel) -> None:
         self.queue = await channel.declare_queue(settings.rabbitmq_queue, durable=True)
 
-    async def get_push_data(self, event: Event) -> dict | None:
+    async def get_push_data(self, event: Event) -> tuple[dict, str] | None:
         batch = await self.batch_service.get(event.batch_id)
+        campaign = await self.campaign_service.get(batch.campaign_id)
+        app = settings.onesignal_credentials(campaign.app_name)
         push = await self.push_service.get(event.push_id)
         push_tokens = await self.batch_service.get_push_tokens(batch.id)
         if not push:
             return
 
         payload = {
-            "app_id": settings.app_id,
+            "app_id": app[1],
             "include_player_ids": push_tokens,
             "contents": push.contents,
             "headings": push.headings,
             "data": push.data,
             "priority": 10
         }
-        return payload
+        return payload, app[0]
 
     async def callback(self, body: Any) -> None:
         event = Event(**json.loads(body))
         logger.info(f'Sending batch {event.batch_id} with push_id {event.push_id}')
         batch = await self.batch_service.get(event.batch_id)
-        payload = await self.get_push_data(event)
+        payload, onesignal_key = await self.get_push_data(event)
+        HEADERS["Authorization"] = onesignal_key
         req = requests.post(settings.onesignal_url, headers=HEADERS,
                             data=json.dumps(payload))
 

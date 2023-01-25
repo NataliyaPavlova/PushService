@@ -5,7 +5,7 @@ import requests
 from core.db_mysql.db import get_mysql_session
 from core.utils import get_batch_service_callback
 from etl_logs.logger import get_logger
-from etl_logs.settings import get_settings
+from core.settings import get_settings
 
 settings = get_settings()
 logger = get_logger(settings.log_filename)
@@ -18,13 +18,14 @@ class OneSignalAPI:
     def __init__(self):
         self.url = settings.onesignal_url
         self.headers = {
-            "Content-Type": "application/json; charset=utf-8",
-            "Authorization": f"{settings.onesignal_key}"
+            "Content-Type": "application/json; charset=utf-8"
         }
 
-    def view_notification(self, notification_id: str) -> tuple:
+    def view_notification(self, notification_id: str, app: tuple) -> tuple:
         """ View general stats for a notification"""
-        url = f"{self.url}/{notification_id}?app_id={settings.app_id}"
+        url = f"{self.url}/{notification_id}?app_id={app[1]}"
+        self.headers["Authorization"] = app[0]
+
         result = requests.get(url, headers=self.headers)
         if result.status_code != http.HTTPStatus.OK:
             return None, None
@@ -51,11 +52,13 @@ class Extractor:
         logger.info('Start getting logs from OneSignal')
 
         session = get_mysql_session()
-        batch_service = await get_batch_service_callback(session)
+        batch_service, campaign_service = await get_batch_service_callback(session)
 
         batches = await batch_service.get_batches_to_log()
         for batch in batches:
-            batch_logs, push_tokens = self.onesignal.view_notification(batch.notification_id)
+            campaign = await campaign_service.get(batch.campaign_id)
+            app = settings.onesignal_credentials(campaign.app_name)
+            batch_logs, push_tokens = self.onesignal.view_notification(batch.notification_id, app)
             await batch_service.set_status_logged(batch.id)
             yield batch_logs, batch, push_tokens
 

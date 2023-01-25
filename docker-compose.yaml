@@ -61,7 +61,6 @@ services:
       - .env
     depends_on:
       - rabbitmq
-    #command: python worker/run_worker.py
 
 
 volumes:

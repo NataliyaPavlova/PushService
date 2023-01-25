@@ -23,7 +23,8 @@ class CampaignService:
             finished_at=campaign.finished_at,
             status=Campaign.CampaignStatus.PENDING.value,
             push_id=created_push.push_id,
-            users=campaign.users))
+            users=campaign.users,
+            app_name=campaign.app_name))
         return created_campaign, created_push
 
     async def get_pending_campaigns(self) -> Sequence[Campaign]:
@@ -32,5 +33,9 @@ class CampaignService:
     async def get_users(self, campaign_id: int) -> list:
         campaign = await self.campaign_repository.get_or_none(campaign_id)
         return campaign.users
+
+    async def get(self, campaign_id: int) -> Campaign:
+        return await self.campaign_repository.get_or_none(campaign_id)
+
 
 

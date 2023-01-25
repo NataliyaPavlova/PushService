@@ -23,5 +23,6 @@ class CampaignRequestCreate(RequestBase):
     push: PushRequestCreate
     started_at: datetime
     finished_at: datetime
+    app_name: str
 
 

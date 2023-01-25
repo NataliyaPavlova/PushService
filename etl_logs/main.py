@@ -1,6 +1,6 @@
 from etl_logs.src.extractor import Extractor
 from etl_logs.src.loader import Loader
-from etl_logs.settings import get_settings
+from core.settings import get_settings
 from etl_logs.logger import get_logger
 
 settings = get_settings()
