@@ -32,7 +32,7 @@ class Settings(BaseSettings):
         return f'mysql+asyncmy://{self.mysql_user}:{self.mysql_root_password}@{self.mysql_host}:{self.mysql_port}/{self.mysql_database}'
 
     class Config:
-            env_file = ENV_FILE
+        env_file = ENV_FILE
 
 
 @lru_cache()
